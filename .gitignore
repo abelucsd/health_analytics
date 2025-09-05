@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.egg-info/
+.Python
+build/
+dist/
+
+# Virtual environment
+.venv/
+env/
+.env/
+*.sqlite3 # Local SQLite database
+db.sqlite3 # Specific to default Django setup
+
+# Media and static files (if served locally but not committed)
+media/
+static/ # If collected static files are not committed
+
+# Local settings and environment variables
+local_settings.py
+.env
+
+# Logs and temporary files
+*.log
+tmp/
+
+# IDE specific files
+.idea/ # PyCharm
+.vscode/ # VS Code
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
