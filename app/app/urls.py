@@ -18,8 +18,7 @@ from django.urls import path
 from ninja import NinjaAPI
 from ninja.security import django_auth
 from users.api import router as users_router
-from core.exceptions import router as exceptions_router
-from core. exceptions import AppError, app_error_handler
+from core.exceptions import AppError, app_error_handler
 
 api = NinjaAPI()
 
