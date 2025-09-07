@@ -5,8 +5,8 @@ from .models import User
 
 class UserRepository:
   @staticmethod
-  def create(**kwargs):
-    return User.objects.create(**kwargs)
+  def create(payload: UserIn):
+    return User.objects.create(**payload)
   
 
   @staticmethod

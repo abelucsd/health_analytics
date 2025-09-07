@@ -11,6 +11,9 @@ def user_factory(mocker):
     def first(self):
       return self[0] if self else None
     
+    def __repr__(self):
+      return f"<QuerySet {list.__repr__(self)}>"
+    
   class UserFactory:
     def create(self, **kwargs):
       defaults = {
@@ -20,7 +23,7 @@ def user_factory(mocker):
         "password": "secretpassword",
         "role": "user"
       }
-      defaults.update(kwargs)      
+      defaults.update(kwargs)
       return User(id=uuid.uuid4(), **defaults)
         
     def queryset(self):      
@@ -46,7 +49,7 @@ def mock_user_data():
       }
     
     def user_payload(self) -> UserIn:
-      return self.data
+      return self.data.copy()
 
     def mock_user_in(self):
       return UserIn(**self.data)
