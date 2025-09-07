@@ -11,6 +11,11 @@ class UserNotFoundError(AppError):
     message = f"User ID {entity_id} not found."
     super().__init__(message, status_code=400)
 
+class InvalidRoleError(AppError):
+  def __init__(self, invalid_role: str):
+    message = f"User role {invalid_role} is invalid."
+    super().__init__(message, status_code=400)
+
 
 
 # api = NinjaAPI()

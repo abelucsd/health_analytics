@@ -131,7 +131,7 @@ class TestUsers:
     qs = user_factory.queryset()
     user = qs.first()
     deleted_user = model_to_dict(user)
-    mocker.patch("users.api.UserService.delete_user", return_value=deleted_user)
+    mocker.patch("users.api.UserService.delete_user", return_value=None)
 
     response = client.delete(f"/api/users/{user.id}")
     response_body = response.json()

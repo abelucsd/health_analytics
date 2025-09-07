@@ -6,7 +6,7 @@ from users.models import User
 from users.schemas import UserIn
 from users.repository import UserRepository
 from core.exceptions import AppError, ValidationError
-from users.exceptions import UserNotFoundError
+from users.exceptions import InvalidRoleError, UserNotFoundError
 
 class UserService:
   @staticmethod
@@ -37,15 +37,26 @@ class UserService:
   @staticmethod
   def update_user(user_id: uuid.UUID, payload: UserIn):
     try:
-      user = UserRepository.get_by_id(user_id)         
+      user = UserRepository.get_by_id(user_id)
     except User.DoesNotExist:
-      raise UserNotFoundError(user_id)  
-    
-    for attr, value in payload.dict().items():
-      setattr(user, attr, value)
+      raise UserNotFoundError(user_id)
 
+    try:      
+      user = UserRepository.update(user, payload)
+    except IntegrityError as e:
+      raise ValidationError(f"Failed to update user: {str(e)}", status_code=400)
+
+    return user
+  
+  @staticmethod
+  def update_user(user_id: uuid.UUID, payload: UserIn):        
+    if payload["role"] not in ["user", "admin"]:
+      raise InvalidRoleError(payload.role)
+    
     try:
-      user.save()
+      user = UserRepository.update(user_id, payload)
+    except User.DoesNotExist:
+      raise UserNotFoundError(user_id)
     except IntegrityError as e:
       raise ValidationError(f"Failed to update user: {str(e)}", status_code=400)    
 
@@ -53,15 +64,10 @@ class UserService:
 
 
   @staticmethod
-  def delete_user(user_id: uuid.UUID):
+  def delete_user(user_id: uuid.UUID):        
     try:
-      user = UserRepository.get_by_id(user_id)
+      UserRepository.delete(user_id)
     except User.DoesNotExist:
-      raise UserNotFoundError(user_id)  
-    
-    try:
-      user.delete()
+      raise UserNotFoundError(user_id)
     except IntegrityError as e:
-      raise ValidationError(f"Failed to delete user: {str(e)}", status_code=400)    
-    
-    return user
+      raise ValidationError(f"Failed to delete user: {str(e)}", status_code=400)
