@@ -5,8 +5,9 @@ from .models import User
 
 class UserRepository:
   @staticmethod
-  def create(payload: UserIn):
-    return User.objects.create(**payload)
+  def create(user_in: UserIn):
+    user_in_dict = user_in.dict()
+    return User.objects.create(**user_in_dict)
   
 
   @staticmethod
@@ -20,9 +21,9 @@ class UserRepository:
   
   
   @staticmethod
-  def update(user_id: uuid.UUID, payload: UserIn):
+  def update(user_id: uuid.UUID, user_in: UserIn):
     user = User.objects.get(id=user_id)
-    for attr, value in payload.dict().items():
+    for attr, value in user_in.dict().items():
       setattr(user, attr, value)
     user.save()
     return user

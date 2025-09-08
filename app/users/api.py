@@ -18,10 +18,7 @@ def create_user(request, payload: UserIn):
 
 @router.get("/{user_id}", response=UserOut)
 def get_user(request, user_id: uuid.UUID):
-  user = UserService.get_user(user_id)  
-  print("-----")
-  print(user)
-  print("HELLO at GET USER BY ID")
+  user = UserService.get_user(user_id)
   return user
 
 
@@ -32,7 +29,7 @@ def list_users(request):
   return user
 
 
-@router.put("/{user_id}")
+@router.put("/{user_id}", response=UserOut)
 def update_user(request, user_id: uuid.UUID, payload: UserIn):
   user = UserService.update_user(user_id, payload)
   return user

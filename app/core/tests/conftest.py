@@ -1,7 +1,7 @@
 import pytest 
 import uuid
 from django.test import Client
-from .utils import AuthenticatedClient
+from core.tests.utils import AuthenticatedClient
 
 class CustomUser():
   def __init__(self):
@@ -15,12 +15,12 @@ def mock_authenticate(mocker):
   test_user = CustomUser()
 
   mocker.patch(
-    "core.users.Authentication.authenticate",
+    "core.authentication.Authentication.authenticate",
     return_value=test_user,
   )
 
 
 @pytest.fixture
-def authenticated_client(mock_authenticate):
+def authenticated_client(mock_authenticate):  
   authenticated_client = AuthenticatedClient(Client())
   return authenticated_client

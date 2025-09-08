@@ -3,17 +3,16 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 
 from users.models import User
-from users.schemas import UserIn
+from users.schemas import UserIn, UserOut
 from users.repository import UserRepository
 from core.exceptions import AppError, ValidationError
 from users.exceptions import InvalidRoleError, UserNotFoundError
 
 class UserService:
   @staticmethod
-  def create_user(payload: UserIn):
-    try:
-      payload_dict = payload.dict()
-      user = UserRepository.create(**payload_dict)      
+  def create_user(user_in: UserIn):
+    try:      
+      user = UserRepository.create(user_in)
       return user
     except IntegrityError as e:
       raise ValidationError(f"Failed to create user: {str(e)}", status_code=400)    
@@ -35,26 +34,12 @@ class UserService:
 
 
   @staticmethod
-  def update_user(user_id: uuid.UUID, payload: UserIn):
-    try:
-      user = UserRepository.get_by_id(user_id)
-    except User.DoesNotExist:
-      raise UserNotFoundError(user_id)
-
-    try:      
-      user = UserRepository.update(user, payload)
-    except IntegrityError as e:
-      raise ValidationError(f"Failed to update user: {str(e)}", status_code=400)
-
-    return user
-  
-  @staticmethod
-  def update_user(user_id: uuid.UUID, payload: UserIn):        
-    if payload["role"] not in ["user", "admin"]:
-      raise InvalidRoleError(payload.role)
+  def update_user(user_id: uuid.UUID, user_in: UserIn):        
+    if user_in.role not in ["user", "admin"]:
+      raise InvalidRoleError(user_in.role)
     
     try:
-      user = UserRepository.update(user_id, payload)
+      user = UserRepository.update(user_id, user_in)
     except User.DoesNotExist:
       raise UserNotFoundError(user_id)
     except IntegrityError as e:

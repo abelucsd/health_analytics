@@ -4,22 +4,6 @@ from users.models import User
 from users.schemas import UserIn
 
 
-class CustomUser():
-  def __init__(self):
-    self.id = uuid.uuid4()
-    self.email = "email@test.com"
-    self.name="test"
-
-
-@pytest.fixture
-def mock_authenticate(mocker):
-  test_user = CustomUser()
-
-  mocker.patch(
-    "core.users.Authentication.authenticate",
-    return_value=test_user,
-  )
-
 
 @pytest.fixture
 @pytest.mark.django_db
@@ -47,7 +31,7 @@ def user_factory(mocker):
       return FakeQuerySet([self.create()])
 
     def user_list(self):
-      return [self.create()]
+      return [self.create()]     
     
   return UserFactory()
 
@@ -65,7 +49,7 @@ def mock_user_data():
         "role": "user"
       }
     
-    def user_payload(self) -> UserIn:
+    def mock_payload(self) -> UserIn:
       return self.data.copy()
 
     def mock_user_in(self):
