@@ -16,10 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from ninja import NinjaAPI
+from ninja.security import django_auth
+from users.api import router as users_router
+from core.exceptions import AppError, app_error_handler
 
 api = NinjaAPI()
 
+api.add_router("/users", users_router)
+
+api.add_exception_handler(AppError, app_error_handler)
+
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", api.urls),
+    path("api/", api.urls),    
 ]
