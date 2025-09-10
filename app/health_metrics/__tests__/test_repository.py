@@ -1,57 +1,57 @@
 import pytest
-from users.models import User
-from users.schemas import UserIn
-from .fixtures import user_factory, mock_user_data
-from users.repository import UserRepository
+from health_metrics.models import HealthMetric
+from health_metrics.schemas import HealthMetricIn
+from .fixtures import health_metric_factory, mock_record_data
+from health_metrics.repository import HealthMetricRepository
 
 
 @pytest.mark.django_db
-class TestUserRepository:
+class TestHealthMetricRepository:
 
-  def test_create(self, mock_user_data):    
-    user_in = mock_user_data.mock_user_in()
+  def test_create(self, mock_record_data):    
+    record_in = mock_record_data.mock_record_in()
 
-    created_user = UserRepository.create(user_in)
+    created_record = HealthMetricRepository.create(record_in)
 
-    assert created_user.email == user_in.email
-
-  
-  def test_get_by_id(self, user_factory):
-    user = user_factory.create()
-    user.save()
-
-    fetched_user = UserRepository.get_by_id(user.id)    
-
-    assert fetched_user.email == user.email
-
-
-  def test_list_all(self, user_factory):
-    user = user_factory.create()
-    user.save()
-
-    fetched_users = UserRepository.list_all()
-
-    assert list(fetched_users)[0].email == user.email
-
-
-  def test_update(self, user_factory, mock_user_data):
-    user_in = mock_user_data.mock_user_in()
-    user = user_factory.create()
-    user.save()
-
-    user_in.first_name = "John"
-
-    updated_user = UserRepository.update(user.id, user_in)
-
-    assert updated_user.first_name == user_in.first_name
+    assert created_record.id == record_in.id
 
   
-  def test_delete(self, user_factory):
-    user = user_factory.create()
-    user.save()    
+  def test_get_by_id(self, health_metric_factory):
+    record = health_metric_factory.create()
+    record.save()
 
-    UserRepository.delete(user.id)
+    fetched_record = HealthMetricRepository.get_by_id(record.id)    
 
-    with pytest.raises(User.DoesNotExist):
-      User.objects.get(id=user.id)
+    assert fetched_record.id == record.id
+
+
+  def test_list_all(self, health_metric_factory):
+    record = health_metric_factory.create()
+    record.save()
+
+    fetched_records = HealthMetricRepository.list_all()
+
+    assert list(fetched_records)[0].id == record.id
+
+
+  def test_update(self, health_metric_factory, mock_record_data):
+    record_in = mock_record_data.mock_record_in()
+    record = health_metric_factory.create()
+    record.save()
+
+    record_in.weight += 10
+
+    updated_record = HealthMetricRepository.update(record.id, record_in)
+
+    assert updated_record.weight == record_in.weight
+
+  
+  def test_delete(self, health_metric_factory):
+    record = health_metric_factory.create()
+    record.save()    
+
+    HealthMetricRepository.delete(record.id)
+
+    with pytest.raises(HealthMetric.DoesNotExist):
+      HealthMetric.objects.get(id=record.id)
     
