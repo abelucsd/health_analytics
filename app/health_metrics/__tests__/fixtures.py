@@ -1,13 +1,13 @@
 import pytest
 import uuid
-from health_metrics.models import HealthMetrics
-from health_metrics.schemas import HealthMetricsIn
+from health_metric.models import HealthMetric
+from health_metric.schemas import HealthMetricIn
 
 
 
 @pytest.fixture
 @pytest.mark.django_db
-def health_metrics_factory(mocker):
+def health_metric_factory(mocker):
   class FakeQuerySet(list):
     def first(self):
       return self[0] if self else None
@@ -15,7 +15,7 @@ def health_metrics_factory(mocker):
     def __repr__(self):
       return f"<QuerySet {list.__repr__(self)}>"
     
-  class HealthMetricsFactory:
+  class HealthMetricFactory:
     def create(self, **kwargs):
       defaults = {
         "id": str(uuid.uuid4()),         # UUID as string
@@ -48,15 +48,15 @@ def health_metrics_factory(mocker):
         "sunlight_exposure": "Moderate"  # Low / Moderate / High
       }
       defaults.update(kwargs)
-      return HealthMetrics(**defaults)
+      return HealthMetric(**defaults)
         
     def queryset(self):      
       return FakeQuerySet([self.create()])
 
-    def health_metrics_list(self):
+    def list(self):
       return [self.create()]     
     
-  return HealthMetricsFactory()
+  return HealthMetricFactory()
 
 
 @pytest.fixture
@@ -93,13 +93,13 @@ def mock_record_data():
         "sunlight_exposure": "Moderate"  # Low / Moderate / High
       }
     
-    def mock_payload(self) -> HealthMetricsIn:
+    def mock_payload(self) -> HealthMetricIn:
       return self.data.copy()
 
     def mock_record_in(self):
-      return HealthMetricsIn(**self.data)
+      return HealthMetricIn(**self.data)
     
     def mock_record(self):
-      return HealthMetrics(id=uuid.uuid4(), bmi=22.9, **self.data)
+      return HealthMetric(id=uuid.uuid4(), bmi=22.9, **self.data)
           
   return MockRecordData()
