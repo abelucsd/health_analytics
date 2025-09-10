@@ -9,21 +9,21 @@ from core.tests.conftest import authenticated_client, mock_authenticate
 
 # Create your tests here.
 
-class TestUsers:
+class TestHealthMetrics:
         
-  def test_create(self, authenticated_client, mocker, mock_user_data):
-    user_payload = mock_user_data.mock_payload()
-    mock_user = mock_user_data.mock_user()
+  def test_create(self, authenticated_client, mocker, mock_record_data):
+    payload = mock_record_data.mock_payload()
+    mock_record = mock_record_data.mock_record()
 
-    mocker.patch("users.api.UserService.create_user", return_value=mock_user)
+    mocker.patch("users.api.UserService.create_user", return_value=mock_record)
 
     response = authenticated_client.post(
-        "/api/users/",
-        data=json.dumps(user_payload),
+        "/api/health_metrics/",
+        data=json.dumps(payload),
     )
 
     assert response.status_code == 200
-    assert response.json() == {"id": str(mock_user.id)}
+    assert response.json() == {"id": str(mock_record.id)}
 
   
   def test_get(self, authenticated_client, mocker, user_factory):

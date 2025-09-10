@@ -2,57 +2,57 @@ import uuid
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 
-from app.health_metrics.exceptions import HealthMetricsNotFoundError, InvalidGenderError
-from .schemas import HealthMetricsIn, HealthMetricsOut
-from .models import HealthMetrics
-from .repository import HealthMetricsRepository
+from app.health_metrics.exceptions import HealthMetricNotFoundError, InvalidGenderError
+from .schemas import HealthMetricIn, HealthMetricOut
+from .models import HealthMetric
+from .repository import HealthMetricRepository
 from core.exceptions import AppError, ValidationError
 
-class HealthMetricsService:
+class HealthMetricervice:
   @staticmethod
-  def create(health_metrics_in: HealthMetricsIn):
+  def create(health_metric_in: HealthMetricIn):
     try:      
-      record = HealthMetricsRepository.create(health_metrics_in)
+      record = HealthMetricRepository.create(health_metric_in)
       return record
     except IntegrityError as e:
-      raise ValidationError(f"Failed to create health metrics: {str(e)}", status_code=400)    
+      raise ValidationError(f"Failed to create health metric: {str(e)}", status_code=400)    
 
 
   @staticmethod
-  def get(health_metrics_id: uuid.UUID):
+  def get(health_metric_id: uuid.UUID):
     try:
-      record = HealthMetricsRepository.get_by_id(health_metrics_id)      
+      record = HealthMetricRepository.get_by_id(health_metric_id)      
       return record
-    except HealthMetrics.DoesNotExist:
-      raise HealthMetricsNotFoundError(health_metrics_id)    
+    except HealthMetric.DoesNotExist:
+      raise HealthMetricNotFoundError(health_metric_id)    
 
 
   @staticmethod
   def list():
-    record = HealthMetricsRepository.list_all()
+    record = HealthMetricRepository.list_all()
     return record
 
 
   @staticmethod
-  def update(health_metrics_id: uuid.UUID, health_metrics_in: HealthMetricsIn):        
-    if health_metrics_in.gender not in ["user", "admin"]:
-      raise InvalidGenderError(health_metrics_in.gender)
+  def update(health_metric_id: uuid.UUID, health_metric_in: HealthMetricIn):        
+    if health_metric_in.gender not in ["male", "female"]:
+      raise InvalidGenderError(health_metric_in.gender)
     
     try:
-      record = HealthMetricsRepository.update(health_metrics_id, health_metrics_in)
-    except HealthMetrics.DoesNotExist:
-      raise HealthMetricsNotFoundError(health_metrics_id)
+      record = HealthMetricRepository.update(health_metric_id, health_metric_in)
+    except HealthMetric.DoesNotExist:
+      raise HealthMetricNotFoundError(health_metric_id)
     except IntegrityError as e:
-      raise ValidationError(f"Failed to update health metrics: {str(e)}", status_code=400)    
+      raise ValidationError(f"Failed to update health metric: {str(e)}", status_code=400)    
 
     return record
 
 
   @staticmethod
-  def delete(health_metrics_id: uuid.UUID):        
+  def delete(health_metric_id: uuid.UUID):        
     try:
-      HealthMetricsRepository.delete(health_metrics_id)
-    except HealthMetrics.DoesNotExist:
-      raise HealthMetricsNotFoundError(health_metrics_id)
+      HealthMetricRepository.delete(health_metric_id)
+    except HealthMetric.DoesNotExist:
+      raise HealthMetricNotFoundError(health_metric_id)
     except IntegrityError as e:
-      raise ValidationError(f"Failed to delete health metrics: {str(e)}", status_code=400)
+      raise ValidationError(f"Failed to delete health metric: {str(e)}", status_code=400)

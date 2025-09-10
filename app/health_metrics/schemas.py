@@ -1,11 +1,11 @@
 from uuid import UUID
 from typing import Optional
-from health_metrics.models import HealthMetricsGenderChoices
+from health_metrics.models import HealthMetricGenderChoices
 from ninja import Schema
 
-class HealthMetricsIn(Schema):
+class HealthMetricIn(Schema):
   age = int
-  gender = Optional[HealthMetricsGenderChoices] = HealthMetricsGenderChoices.MALE
+  gender = Optional[HealthMetricGenderChoices] = HealthMetricGenderChoices.MALE
   height = float
   weight = float
 
@@ -35,10 +35,10 @@ class HealthMetricsIn(Schema):
     extra = "forbid"
 
 
-class HealthMetricsOut(Schema):
+class HealthMetricOut(Schema):
   id = UUID
   age = int
-  gender = str
+  gender = Optional[HealthMetricGenderChoices] = HealthMetricGenderChoices.MALE
   height = float
   weight = float
 
