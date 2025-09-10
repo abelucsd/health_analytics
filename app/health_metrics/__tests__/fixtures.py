@@ -1,0 +1,105 @@
+import pytest
+import uuid
+from health_metrics.models import HealthMetrics
+from health_metrics.schemas import HealthMetricsIn
+
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def health_metrics_factory(mocker):
+  class FakeQuerySet(list):
+    def first(self):
+      return self[0] if self else None
+    
+    def __repr__(self):
+      return f"<QuerySet {list.__repr__(self)}>"
+    
+  class HealthMetricsFactory:
+    def create(self, **kwargs):
+      defaults = {
+        "id": str(uuid.uuid4()),         # UUID as string
+        "age": 30,                       # typical adult
+        "gender": "Male",                # or "Female"/"Other"
+        "height": 175.0,                 # cm
+        "weight": 70.0,                  # kg
+        "bmi": 22.9,                     # Normal: 18.5–24.9
+
+        # results
+        "blood_pressure": 120.0,         # systolic mmHg (normal ~120/80)
+        "heart_rate": 72.0,              # bpm (normal 60–100)
+        "cholesterol": 180.0,            # mg/dL (desirable <200)
+        "glucose": 90.0,                 # mg/dL fasting (normal 70–99)
+        "insulin": 10.0,                 # µIU/mL (normal ~2–25)
+        "stress_level": 3,               # scale 1–10 (low–moderate)
+
+        # lifestyle choices
+        "sleep_hours": 7.5,              # hrs/day (7–9 healthy)
+        "sleep_quality": "Good",         # Poor / Fair / Good / Excellent
+        "work_hours": 8.0,               # hrs/day
+        "physical_activity": 4.0,        # hrs/week (moderate 3–5)
+        "daily_steps": 8000,             # steps/day (7k–10k ideal)
+        "calorie_intake": 2200.0,        # kcal/day (avg adult male)
+        "alcohol_consumption": "Low",    # None / Low / Moderate / High
+        "smoking_level": "None",         # None / Light / Moderate / Heavy
+        "water_intake": 2.5,             # liters/day (2–3L healthy)
+        "diet_type": "Balanced",         # Balanced / Vegan / Keto / etc.
+        "exercise_type": "Cardio",       # Cardio / Strength / Mixed
+        "sunlight_exposure": "Moderate"  # Low / Moderate / High
+      }
+      defaults.update(kwargs)
+      return HealthMetrics(**defaults)
+        
+    def queryset(self):      
+      return FakeQuerySet([self.create()])
+
+    def health_metrics_list(self):
+      return [self.create()]     
+    
+  return HealthMetricsFactory()
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def mock_record_data():
+  class MockRecordData():
+    def __init__(self):
+      self.data = {        
+        "age": 30,                       # typical adult
+        "gender": "Male",                # or "Female"/"Other"
+        "height": 175.0,                 # cm
+        "weight": 70.0,                  # kg        
+
+        # results
+        "blood_pressure": 120.0,         # systolic mmHg (normal ~120/80)
+        "heart_rate": 72.0,              # bpm (normal 60–100)
+        "cholesterol": 180.0,            # mg/dL (desirable <200)
+        "glucose": 90.0,                 # mg/dL fasting (normal 70–99)
+        "insulin": 10.0,                 # µIU/mL (normal ~2–25)
+        "stress_level": 3,               # scale 1–10 (low–moderate)
+
+        # lifestyle choices
+        "sleep_hours": 7.5,              # hrs/day (7–9 healthy)
+        "sleep_quality": "Good",         # Poor / Fair / Good / Excellent
+        "work_hours": 8.0,               # hrs/day
+        "physical_activity": 4.0,        # hrs/week (moderate 3–5)
+        "daily_steps": 8000,             # steps/day (7k–10k ideal)
+        "calorie_intake": 2200.0,        # kcal/day (avg adult male)
+        "alcohol_consumption": "Low",    # None / Low / Moderate / High
+        "smoking_level": "None",         # None / Light / Moderate / Heavy
+        "water_intake": 2.5,             # liters/day (2–3L healthy)
+        "diet_type": "Balanced",         # Balanced / Vegan / Keto / etc.
+        "exercise_type": "Cardio",       # Cardio / Strength / Mixed
+        "sunlight_exposure": "Moderate"  # Low / Moderate / High
+      }
+    
+    def mock_payload(self) -> HealthMetricsIn:
+      return self.data.copy()
+
+    def mock_record_in(self):
+      return HealthMetricsIn(**self.data)
+    
+    def mock_record(self):
+      return HealthMetrics(id=uuid.uuid4(), bmi=22.9, **self.data)
+          
+  return MockRecordData()
