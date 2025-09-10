@@ -5,9 +5,9 @@ from django.forms.models import model_to_dict
 from health_metrics.service import HealthMetricService
 from .fixtures import health_metric_factory, mock_record_data
 
-class TestUserService:
+class TestHealthServiceService:
   def test_create(self, mocker, mock_record_data):
-    payload = mock_record_data.mock_user_in()
+    payload = mock_record_data.mock_record_in()
     mock_record = mock_record_data.mock_record()
     mocker.patch("health_metrics.service.HealthMetricRepository.create", return_value=mock_record)
 
@@ -38,7 +38,7 @@ class TestUserService:
 
   def test_update(self, mocker, mock_record_data):
     mock_record = mock_record_data.mock_record()
-    mock_record_in = mock_record_data.mock_user_in()
+    mock_record_in = mock_record_data.mock_record_in()
 
     # update through payload
     mock_record_in.weight += 10
@@ -55,7 +55,7 @@ class TestUserService:
 
 
   def test_delete(self, mocker, mock_record_data):
-    mock_record = mock_record_data.mock_user()
+    mock_record = mock_record_data.mock_record()
 
     mocker.patch("health_metrics.service.HealthMetricRepository.delete")
 
