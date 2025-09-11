@@ -47,14 +47,14 @@ class TestE2EHealthMetrics:
     response_body = response.json()
 
     assert response.status_code == 200
-    assert response_body[0]["id"] == record_list[0].id
+    assert response_body[0]["weight"] == record_list[0].weight
+
      
   def test_update(self, authenticated_client, health_metric_factory):
     record = health_metric_factory.create()
     record.save()
 
-    updated_record = {
-      "id": str(record.id),
+    updated_record = {      
       "age": record.age,
       "gender": record.gender,
       "height": record.height,

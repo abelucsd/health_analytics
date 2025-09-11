@@ -1,11 +1,11 @@
 import uuid
-from .schemas import HealthMetric
-from .models import HealthMetric
+from health_metrics.schemas import HealthMetricIn
+from health_metrics.models import HealthMetric
 
 
 class HealthMetricRepository:
   @staticmethod
-  def create(health_metric_in: HealthMetric):
+  def create(health_metric_in: HealthMetricIn):
     health_metric_in_dict = health_metric_in.dict()
     return HealthMetric.objects.create(**health_metric_in_dict)
   
@@ -21,7 +21,7 @@ class HealthMetricRepository:
   
   
   @staticmethod
-  def update(health_metric_id: uuid.UUID, health_metric_in: HealthMetric):
+  def update(health_metric_id: uuid.UUID, health_metric_in: HealthMetricIn):
     record = HealthMetric.objects.get(id=health_metric_id)
     for attr, value in health_metric_in.dict().items():
       setattr(record, attr, value)

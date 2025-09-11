@@ -2,13 +2,13 @@ import uuid
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 
-from app.health_metrics.exceptions import HealthMetricNotFoundError, InvalidGenderError
-from .schemas import HealthMetricIn, HealthMetricOut
-from .models import HealthMetric
-from .repository import HealthMetricRepository
+from health_metrics.exceptions import HealthMetricNotFoundError, InvalidGenderError
+from health_metrics.schemas import HealthMetricIn, HealthMetricOut
+from health_metrics.models import HealthMetric
+from health_metrics.repository import HealthMetricRepository
 from core.exceptions import AppError, ValidationError
 
-class HealthMetricervice:
+class HealthMetricService:
   @staticmethod
   def create(health_metric_in: HealthMetricIn):
     try:      

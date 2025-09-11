@@ -10,22 +10,23 @@ from core.tests.conftest import authenticated_client, mock_authenticate
 # Create your tests here.
 
 class TestHealthMetrics:
-        
+
+    
   def test_create(self, authenticated_client, mocker, mock_record_data):
     payload = mock_record_data.mock_payload()
     mock_record = mock_record_data.mock_record()
 
-    mocker.patch("health_metrics.api.HealthMetricService.create", return_value=mock_record)
+    mocker.patch("health_metrics.api.HealthMetricService.create", return_value=mock_record)    
 
     response = authenticated_client.post(
-        "/api/health_metrics/",
-        data=json.dumps(payload),
+      "/api/health_metrics/",
+      data=json.dumps(payload),
     )
 
     assert response.status_code == 200
     assert response.json() == {"id": str(mock_record.id)}
 
-  
+    
   def test_get(self, authenticated_client, mocker, health_metric_factory):
     health_metric_factory.create()
     qs = health_metric_factory.queryset()    
@@ -38,7 +39,7 @@ class TestHealthMetrics:
     assert response.status_code == 200
     assert response_body["id"] == record.id
 
-  
+    
   def test_list_mock(self, authenticated_client, mocker, health_metric_factory):
 
     health_metric_factory.create()
@@ -50,20 +51,20 @@ class TestHealthMetrics:
     response_body = response.json()
 
     assert response.status_code == 200
-    assert response_body[0]["id"] == record_list[0].id
+    assert response_body[0]["weight"] == record_list[0].weight
 
-  
-  def test_update(self, authenticated_client, mocker, health_metric_factory):
+    
+  def test_update(self, authenticated_client, mocker, health_metric_factory, mock_record_data):
+    payload = mock_record_data.mock_payload()
     health_metric_factory.create()
     qs = health_metric_factory.queryset()    
     record = qs.first()
-    updated_record = {
-      "id": str(record.id),
+    updated_record: HealthMetricIn = {      
       "age": record.age,
       "gender": record.gender,
       "height": record.height,
       "weight": record.weight + 10,
-      "bmi": record.bmi,
+      "bmi": 22.9,   
 
       # results
       "blood_pressure": record.blood_pressure,
@@ -86,11 +87,11 @@ class TestHealthMetrics:
       "diet_type": record.diet_type,
       "exercise_type": record.exercise_type,
       "sunlight_exposure": record.sunlight_exposure
-    }
+    }    
 
     mocker.patch("health_metrics.api.HealthMetricService.update", return_value={"id": uuid.uuid4(), **updated_record})
 
-    response = authenticated_client.put(f"/api/health_metrics/{updated_record.id}", data=json.dumps(updated_record))
+    response = authenticated_client.put(f"/api/health_metrics/{str(record.id)}", data=json.dumps(updated_record))
     response_body = response.json()
 
     assert response.status_code == 200

@@ -1,7 +1,7 @@
 import pytest
 import uuid
-from health_metric.models import HealthMetric
-from health_metric.schemas import HealthMetricIn
+from health_metrics.models import HealthMetric
+from health_metrics.schemas import HealthMetricIn
 
 
 
@@ -15,15 +15,15 @@ def health_metric_factory(mocker):
     def __repr__(self):
       return f"<QuerySet {list.__repr__(self)}>"
     
-  class HealthMetricFactory:
+  class HealthMetricFactory:    
     def create(self, **kwargs):
       defaults = {
         "id": str(uuid.uuid4()),         # UUID as string
         "age": 30,                       # typical adult
-        "gender": "Male",                # or "Female"/"Other"
+        "gender": "male",                # or "Female"/"Other"
         "height": 175.0,                 # cm
-        "weight": 70.0,                  # kg
-        "bmi": 22.9,                     # Normal: 18.5–24.9
+        "weight": 150.0,                  # kg
+        "bmi": 22.25,
 
         # results
         "blood_pressure": 120.0,         # systolic mmHg (normal ~120/80)
@@ -54,7 +54,7 @@ def health_metric_factory(mocker):
       return FakeQuerySet([self.create()])
 
     def list(self):
-      return [self.create()]     
+      return [self.create()]
     
   return HealthMetricFactory()
 
@@ -66,9 +66,10 @@ def mock_record_data():
     def __init__(self):
       self.data = {        
         "age": 30,                       # typical adult
-        "gender": "Male",                # or "Female"/"Other"
+        "gender": "male",                # or "Female"/"Other"
         "height": 175.0,                 # cm
-        "weight": 70.0,                  # kg        
+        "weight": 150.0,                  # kg
+        "bmi": 22.25,
 
         # results
         "blood_pressure": 120.0,         # systolic mmHg (normal ~120/80)
@@ -100,6 +101,6 @@ def mock_record_data():
       return HealthMetricIn(**self.data)
     
     def mock_record(self):
-      return HealthMetric(id=uuid.uuid4(), bmi=22.9, **self.data)
+      return HealthMetric(id=uuid.uuid4(), **self.data)
           
   return MockRecordData()

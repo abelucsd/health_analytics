@@ -14,7 +14,7 @@ class HealthMetric(models.Model):
   gender = models.CharField(
     max_length = 10,
     choices = HealthMetricGenderChoices.choices,
-    default = HealthMetricGenderChoices.USER,
+    default = HealthMetricGenderChoices.MALE,
   )
 
 
