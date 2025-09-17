@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ninja',
     'users',
-
+    'health_metrics',
 ]
 
 MIDDLEWARE = [
