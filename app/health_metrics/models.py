@@ -3,18 +3,18 @@ from django.db import models
 
 # Create your models here.
 
-class HealthMetricsGenderChoices(models.TextChoices):
+class HealthMetricGenderChoices(models.TextChoices):
   MALE = "male",
   FEMALE = "female"
 
 
-class HealthMetrics(models.Model):
+class HealthMetric(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   age = models.IntegerField(default=20)
   gender = models.CharField(
     max_length = 10,
-    choices = HealthMetricsGenderChoices.choices,
-    default = HealthMetricsGenderChoices.USER,
+    choices = HealthMetricGenderChoices.choices,
+    default = HealthMetricGenderChoices.MALE,
   )
 
 
@@ -53,4 +53,3 @@ class HealthMetrics(models.Model):
   def __str__(self):
     return f"{self.survey_code} - {self.age}y"
   
-

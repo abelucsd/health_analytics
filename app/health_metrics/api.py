@@ -3,39 +3,40 @@ from ninja import NinjaAPI, Schema
 from ninja import Router
 import uuid
 from django.shortcuts import get_object_or_404
-from .models import HealthMetrics
-from .schemas import HealthMetricsIn, HealthMetricsOut
-from .service import HealthMetricsService
+from health_metrics.models import HealthMetric
+from health_metrics.schemas import HealthMetricIn, HealthMetricOut
+from health_metrics.service import HealthMetricService
 
 router = Router()
 
 
 @router.post("/")
-def create(request, payload: HealthMetricsIn):   
-  record = HealthMetricsService.create_user(payload)
+def create(request, payload: HealthMetricIn):
+  print("Hello")
+  record = HealthMetricService.create(payload)
   return {"id": record.id}
 
 
-@router.get("/{health_metrics_id}", response=HealthMetricsOut)
-def get(request, health_metrics_id: uuid.UUID):
-  record = HealthMetricsService.get_user(health_metrics_id)
+@router.get("/{health_metric_id}", response=HealthMetricOut)
+def get(request, health_metric_id: uuid.UUID):
+  record = HealthMetricService.get(health_metric_id)
   return record
 
 
-@router.get("/", response=List[HealthMetricsOut])
+@router.get("/", response=List[HealthMetricOut])
 def list(request):
-  record = HealthMetricsService.list_users()
-  print("HELLO at GET USERS")
+  record = HealthMetricService.list()  
   return record
 
 
-@router.put("/{health_metrics_id}", response=HealthMetricsOut)
-def update(request, health_metrics_id: uuid.UUID, payload: HealthMetricsIn):
-  record = HealthMetricsService.update_user(health_metrics_id, payload)
+@router.put("/{health_metric_id}", response=HealthMetricOut)
+def update(request, health_metric_id: uuid.UUID, payload: HealthMetricIn):
+  print("IN the API update")
+  record = HealthMetricService.update(health_metric_id, payload)
   return record
 
 
-@router.delete("/{health_metrics_id}")
-def delete(request, health_metrics_id: uuid.UUID):
-  HealthMetricsService.delete_user(health_metrics_id)
+@router.delete("/{health_metric_id}")
+def delete(request, health_metric_id: uuid.UUID):
+  HealthMetricService.delete(health_metric_id)
   return {"success": True}
