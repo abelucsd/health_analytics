@@ -8,7 +8,10 @@ import xgboost as xgb
 import shap
 from sklearn.metrics import mean_squared_error, r2_score
 from analytics.xgboost.import_dataset import import_dataset
-from app.health_metrics.models import HealthMetric
+from health_metrics.models import HealthMetric
+
+TARGET_FIELDS = ["bmi", "blood_pressure", "heart_rate", "cholesterol", "glucose", "insulin", "stress_level"]
+CATEGORICAL_COLS = ['gender', 'sleep_quality', 'alcohol_consumption', 'smoking_level', 'diet_type', 'exercise_type', 'sunlight_exposure']
 
 
 def preprocess(result_field: str):
@@ -49,11 +52,10 @@ def preprocess(result_field: str):
 
 
   # Preprocess
-  # Drop the result fields  
-  result_fields = ["bmi", "blood_pressure", "heart_rate", "cholesterol", "glucose", "insulin", "stress_level"]
-  if result_field not in result_fields:
+  # Drop the result fields    
+  if result_field not in TARGET_FIELDS:
     raise ValueError(f"The input result attribute {result_field} does not exist in the dataset or result fields.")  
-  X = df.drop(columns=result_fields)
+  X = df.drop(columns=TARGET_FIELDS)
   y = df[result_field]
 
   # One-hot encode string/categorical features
@@ -70,7 +72,7 @@ def preprocess_queryset(id: uuid.UUID):
   """
   try:
     # Load the dataset into Pandas
-    qs = HealthMetric.get(id = id)
+    qs = HealthMetric.objects.get(id=id)    
     
 
     # Drop unnecessary columns
@@ -101,10 +103,19 @@ def preprocess_queryset(id: uuid.UUID):
     ]  
 
     df = pd.DataFrame([{col: getattr(qs, col) for col in columns_to_keep}])
+    print(df.columns)
 
-    dmatrix = xgb.DMatrix(df)
+    # Drop other target fields
+    targets = [r for r in TARGET_FIELDS]
+    df = df.drop(columns=targets)
 
-    return dmatrix
+    # One-hot encode categorical columns
+    categorical_cols = [c for c in CATEGORICAL_COLS if c in df.columns]
+    df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+
+    print(df.columns)
+
+    return df
   except Exception as e:
     print(f"[preprocess_queryset] Error: {e}")
     return {"error": str(e)}
