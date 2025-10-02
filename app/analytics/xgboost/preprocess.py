@@ -1,5 +1,5 @@
 # TODO: Test with a table
-
+import uuid
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -8,6 +8,7 @@ import xgboost as xgb
 import shap
 from sklearn.metrics import mean_squared_error, r2_score
 from analytics.xgboost.import_dataset import import_dataset
+from app.health_metrics.models import HealthMetric
 
 
 def preprocess(result_field: str):
@@ -61,3 +62,49 @@ def preprocess(result_field: str):
   X = pd.get_dummies(X, columns=categorical_cols, drop_first=True)
   
   return X, y
+
+
+def preprocess_queryset(id: uuid.UUID):
+  """
+  Query 1 row from HealthMetric database for analysis.
+  """
+  try:
+    # Load the dataset into Pandas
+    qs = HealthMetric.get(id = id)
+    
+
+    # Drop unnecessary columns
+    columns_to_keep = [
+      "age",
+      "gender",
+      "height",
+      "weight",
+      "bmi",
+      "blood_pressure",
+      "heart_rate",
+      "cholesterol",
+      "glucose",
+      "insulin",
+      "stress_level",
+      "sleep_hours",
+      "sleep_quality",
+      "work_hours",
+      "physical_activity",
+      "daily_steps",
+      "calorie_intake",
+      "alcohol_consumption",
+      "smoking_level",
+      "water_intake",
+      "diet_type",
+      "exercise_type",
+      "sunlight_exposure",
+    ]  
+
+    df = pd.DataFrame([{col: getattr(qs, col) for col in columns_to_keep}])
+
+    dmatrix = xgb.DMatrix(df)
+
+    return dmatrix
+  except Exception as e:
+    print(f"[preprocess_queryset] Error: {e}")
+    return {"error": str(e)}

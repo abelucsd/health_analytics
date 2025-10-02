@@ -1,3 +1,4 @@
+import argparse
 from sklearn.model_selection import train_test_split
 import xgboost as xgb
 from sklearn.metrics import root_mean_squared_error, r2_score, mean_squared_error
@@ -77,11 +78,11 @@ def run_shap(model, X_test):
   return feature_importance.to_dict(orient="records")
   
 
-def run_lifestyle_analysis():  
+def run_lifestyle_analysis(target: str):  
   print(f"[train.py] Starting preprocess()")
 
   # lifestyle dataset
-  X, y = preprocess("bmi")
+  X, y = preprocess(target)
 
   X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
@@ -108,7 +109,7 @@ def run_lifestyle_analysis():
 
   # save the model
   print(f"[train.py] Saving the model.")
-  MODEL_PATH = os.path.join(MODEL_DIR, "xgb_model.json")
+  MODEL_PATH = os.path.join(MODEL_DIR, f"xgb_model_{target}.json")
   model.save_model(MODEL_PATH)
 
 
@@ -120,5 +121,12 @@ def run_lifestyle_analysis():
 
 
 if __name__ == "__main__":
-  print(f"[train.py] running run_lifestyle_analysis()")
-  run_lifestyle_analysis()
+  try:
+    print(f"[train.py] running run_lifestyle_analysis()")
+    parser = argparse.ArgumentParser(description="Train an XGBoost Model.")
+    parser.add_argument("--target", type=str, required=True, help="The y output attribute name.")
+
+    args = parser.parse_args()
+    run_lifestyle_analysis(args.target)
+  except Exception as e:
+    print(f"[analysis.xgboost.train] Error: {e}")
