@@ -1,11 +1,14 @@
 from typing import List
 from ninja import NinjaAPI, Schema
 from ninja import Router
+from ninja import File
+from django.core.files.uploadedfile import UploadedFile
 import uuid
 from django.shortcuts import get_object_or_404
 from health_metrics.models import HealthMetric
 from health_metrics.schemas import HealthMetricIn, HealthMetricOut
 from health_metrics.service import HealthMetricService
+
 
 router = Router()
 
@@ -40,3 +43,11 @@ def update(request, health_metric_id: uuid.UUID, payload: HealthMetricIn):
 def delete(request, health_metric_id: uuid.UUID):
   HealthMetricService.delete(health_metric_id)
   return {"success": True}
+
+
+@router.post("/upload")
+def upload_file(request, file: UploadedFile = File(...)):
+  content = file.read()
+  filename = file.size
+  size = file.size
+  return {"filename": filename, "size": size}

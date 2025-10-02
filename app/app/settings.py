@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'ninja',
     'users',
     'health_metrics',
+    'analytics',
 ]
 
 MIDDLEWARE = [
