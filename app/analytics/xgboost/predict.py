@@ -50,5 +50,5 @@ def run_shap(id: uuid.UUID, model_type: str):
     # To JSON format
     return feature_importance.to_dict(orient="records")
   except Exception as e:  
-    logger.error("[run_shap] Error: %s", exc_info=True)
+    logger.error("[run_shap] Error", exc_info=True)
     return {"error": str(e)}

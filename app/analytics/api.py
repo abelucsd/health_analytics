@@ -28,8 +28,8 @@ def explain_features(request, id: str, model_type: str):
     logger.info("API GET /explain/%s 200 OK", id)
     return shap_vals
   except ValueError as e:
-    logger.error("Error: %s", exc_info=True)
+    logger.error("Error", exc_info=True)
     return JsonResponse({"error": "Sample not found"}, status=404)
   except Exception as e:
-    logger.error("Error: %s", exc_info=True)
+    logger.error("Error", exc_info=True)
     return JsonResponse({"error": "Internal server error"}, status=500)

@@ -22,7 +22,7 @@ class UserService:
       logger.debug("CREATE model=User success user_id: %s", user.id)
       return user
     except IntegrityError as e:
-      logger.error("CREATE ERROR: %s", exc_info=True)
+      logger.error("CREATE ERROR", exc_info=True)
       raise ValidationError(f"Failed to create user: {str(e)}", status_code=400)    
 
 
@@ -34,7 +34,7 @@ class UserService:
       logger.debug("READ model=User success user_id: id%s", user_id)
       return user
     except User.DoesNotExist as e:
-      logger.error("READ ERROR: %s", exc_info=True)
+      logger.error("READ ERROR", exc_info=True)
       raise UserNotFoundError(user_id)    
 
 
@@ -49,7 +49,7 @@ class UserService:
   @staticmethod
   def update_user(user_id: uuid.UUID, user_in: UserIn):        
     if user_in.role not in ["user", "admin"]:
-      logger.error("UPDATE ERROR: InvalidRoleError %s", exc_info=True)
+      logger.error("UPDATE ERROR: InvalidRoleError", exc_info=True)
       raise InvalidRoleError(user_in.role)
     
     try:
@@ -57,10 +57,10 @@ class UserService:
       user = UserRepository.update(user_id, user_in)
       logger.debug("READ model=User success user_id: id%s", user_id)
     except User.DoesNotExist as e:
-      logger.error("UPDATE ERROR: %s", exc_info=True)
+      logger.error("UPDATE ERROR", exc_info=True)
       raise UserNotFoundError(user_id)
     except IntegrityError as e:
-      logger.error("UPDATE ERROR: %s", exc_info=True)
+      logger.error("UPDATE ERROR", exc_info=True)
       raise ValidationError(f"Failed to update user: {str(e)}", status_code=400)    
 
     return user
@@ -73,8 +73,8 @@ class UserService:
       UserRepository.delete(user_id)
       logger.debug("DELETE model=User success user_id: id%s", user_id)
     except User.DoesNotExist as e:
-      logger.error("DELETE ERROR: %s", exc_info=True)
+      logger.error("DELETE ERROR", exc_info=True)
       raise UserNotFoundError(user_id)
     except IntegrityError as e:
-      logger.error("DELETE ERROR: %s", exc_info=True)
+      logger.error("DELETE ERROR", exc_info=True)
       raise ValidationError(f"Failed to delete user: {str(e)}", status_code=400)

@@ -132,5 +132,5 @@ def preprocess_queryset(id: uuid.UUID, train_columns: List[str]):
 
     return df
   except Exception as e:    
-    logger.debug("[preprocess_queryset] Error: %s", exc_info=True)
+    logger.debug("[preprocess_queryset] Error", exc_info=True)
     return {"error": str(e)}

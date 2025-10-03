@@ -22,7 +22,7 @@ class HealthMetricService:
       logger.debug("CREATE model=HealthMetric success")
       return record
     except IntegrityError as e:
-      logger.error("CREATE ERROR: %s", exc_info=True)
+      logger.error("CREATE ERROR", exc_info=True)
       raise ValidationError(f"Failed to create health metric: {str(e)}", status_code=400)    
 
 
@@ -34,7 +34,7 @@ class HealthMetricService:
       logger.debug("GET model=HealthMetric success id:%s", record.id) 
       return record
     except HealthMetric.DoesNotExist as e:
-      logger.error("GET ERROR: %s", exc_info=True)
+      logger.error("GET ERROR", exc_info=True)
       raise HealthMetricNotFoundError(health_metric_id)    
 
 
@@ -49,7 +49,7 @@ class HealthMetricService:
   @staticmethod
   def update(health_metric_id: uuid.UUID, health_metric_in: HealthMetricIn):        
     if health_metric_in.gender not in ["male", "female"]:
-      logger.error("UPDATE ERROR: InvalidGenderError %s", exc_info=True)
+      logger.error("UPDATE ERROR: InvalidGenderError", exc_info=True)
       raise InvalidGenderError(health_metric_in.gender)
     
     try:
@@ -57,10 +57,10 @@ class HealthMetricService:
       record = HealthMetricRepository.update(health_metric_id, health_metric_in)
       logger.debug("UPDATE model=HealthMetric success")
     except HealthMetric.DoesNotExist as e:
-      logger.error("UPDATE ERROR: %s", exc_info=True)
+      logger.error("UPDATE ERROR", exc_info=True)
       raise HealthMetricNotFoundError(health_metric_id)
     except IntegrityError as e:
-      logger.error("UPDATE ERROR: %s", exc_info=True)
+      logger.error("UPDATE ERROR", exc_info=True)
       raise ValidationError(f"Failed to update health metric: {str(e)}", status_code=400)    
 
     return record
@@ -73,8 +73,8 @@ class HealthMetricService:
       HealthMetricRepository.delete(health_metric_id)
       logger.debug("DELETE model=HealthMetric success id:%s", health_metric_id)
     except HealthMetric.DoesNotExist as e:
-      logger.error("DELETE ERROR: %s", exc_info=True)
+      logger.error("DELETE ERROR", exc_info=True)
       raise HealthMetricNotFoundError(health_metric_id)
     except IntegrityError as e:
-      logger.error("DELETE ERROR: %s", exc_info=True)
+      logger.error("DELETE ERROR", exc_info=True)
       raise ValidationError(f"Failed to delete health metric: {str(e)}", status_code=400)
