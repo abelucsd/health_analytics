@@ -1,4 +1,4 @@
-# TODO: Test with a table
+import logging
 from typing import List
 import uuid
 from django.forms import model_to_dict
@@ -11,6 +11,10 @@ import shap
 from sklearn.metrics import mean_squared_error, r2_score
 from analytics.xgboost.import_dataset import import_dataset
 from health_metrics.models import HealthMetric
+
+
+logger = logging.getLogger("analytics")
+
 
 TARGET_FIELDS = ["bmi", "blood_pressure", "heart_rate", "cholesterol", "glucose", "insulin", "stress_level"]
 CATEGORICAL_COLS = ['gender', 'sleep_quality', 'alcohol_consumption', 'smoking_level', 'diet_type', 'exercise_type', 'sunlight_exposure']
@@ -74,7 +78,8 @@ def preprocess_queryset(id: uuid.UUID, train_columns: List[str]):
   """
   try:
     # Load the dataset into Pandas
-    qs = HealthMetric.objects.get(id=id)    
+    logger.debug("[preprocess_queryset] Load the dataset into Pandas")
+    qs = HealthMetric.objects.get(id=id)
     
 
     # Drop unnecessary columns
@@ -104,22 +109,28 @@ def preprocess_queryset(id: uuid.UUID, train_columns: List[str]):
       "sunlight_exposure",
     ]        
 
+    logger.debug("[preprocess_queryset] Drop the unnecessary columns")
     df = pd.DataFrame([{col: getattr(qs, col) for col in columns_to_keep}])    
 
     # Drop other target fields
+    logger.debug("[preprocess_queryset] Drop other target field columns")
     targets = [r for r in TARGET_FIELDS]
     df = df.drop(columns=targets)
 
     # One-hot encode categorical columns
+    logger.debug("[preprocess_queryset] One-hot encode categorical columns")
     categorical_cols = ['gender', 'sleep_quality', 'alcohol_consumption', 'smoking_level', 'diet_type', 'exercise_type', 'sunlight_exposure']
     categorical_cols = [c for c in categorical_cols if c in df.columns]
 
     df = pd.get_dummies(df, columns=categorical_cols, drop_first=False)
 
     # Align with the training columns
+    logger.debug("[preprocess_queryset] Align with the training columns")
     df = df.reindex(columns=train_columns, fill_value=0)
 
+    logger.debug("[preprocess_queryset] Complete")
+
     return df
-  except Exception as e:
-    print(f"[preprocess_queryset] Error: {e}")
+  except Exception as e:    
+    logger.debug("[preprocess_queryset] Error", exc_info=True)
     return {"error": str(e)}
