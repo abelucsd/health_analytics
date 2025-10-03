@@ -1,3 +1,7 @@
+"""
+Only call these functions in development via command line.
+i.e. python app.analytics.xgboost.train --target bmi
+"""
 import os
 import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
@@ -10,9 +14,6 @@ import shap
 import pandas as pd
 import numpy as np
 from .preprocess import preprocess
-
-
-
 
 
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "models")

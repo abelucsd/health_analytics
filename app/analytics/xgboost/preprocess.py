@@ -17,10 +17,10 @@ CATEGORICAL_COLS = ['gender', 'sleep_quality', 'alcohol_consumption', 'smoking_l
 
 
 def preprocess(result_field: str):
-  # Load from DB
-  # health_metrics_qs = HealthMetricService.list()
-  # df = pd.DataFrame(list(health_metrics_qs))
-
+  """
+  Only runs in development.
+  Preprocess the imported dataframe for model training.
+  """  
   # Load the dataset into Pandas
   df_unfiltered = import_dataset()
 
@@ -117,7 +117,7 @@ def preprocess_queryset(id: uuid.UUID, train_columns: List[str]):
     df = pd.get_dummies(df, columns=categorical_cols, drop_first=False)
 
     # Align with the training columns
-    df = df.reindex(columns=train_columns, fill_value=0)  
+    df = df.reindex(columns=train_columns, fill_value=0)
 
     return df
   except Exception as e:

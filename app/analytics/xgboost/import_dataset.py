@@ -5,6 +5,9 @@ import glob
 
 
 def import_dataset():
+  """
+    Imports a dataset from Kaggle. Part of a development only workflow.
+  """
   # 1. Download latest version
   try:
     path = kagglehub.dataset_download("mahdimashayekhi/disease-risk-from-daily-habits")

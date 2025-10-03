@@ -27,7 +27,7 @@ def run_shap(id: uuid.UUID, model_type: str):
 
     print("Preprocess the database row")
     # Preprocess row data
-    row = preprocess_queryset(id, booster.feature_names)  
+    row = preprocess_queryset(id, booster.feature_names)
 
     print("Execute SHAP analysis")
     # Execute shap analysis
