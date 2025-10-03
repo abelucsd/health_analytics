@@ -113,11 +113,11 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "[%(name)s] {levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "format": "[{name}] {levelname} {asctime} {module} {process:d} {thread:d} {message}",
             "style": "{",
         },
         "simple": {
-            "format": "[%(name)s] {levelname} {message}",
+            "format": "[{name}] {levelname} {message}",
             "style": "{",
         },
     },
