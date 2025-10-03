@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -104,6 +105,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+LOG_FILE_PATH = LOG_DIR / "debug.log"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -126,7 +130,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": "/logs/debug.log",
+            "filename": LOG_FILE_PATH,
             "formatter": "verbose",
         }
     },
