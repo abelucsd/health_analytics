@@ -16,17 +16,17 @@ logger = logging.getLogger("health_metrics")
 
 @router.post("/")
 def create(request, payload: HealthMetricIn): 
-  logger.info(f"API POST /") 
+  logger.info("API POST /") 
   record = HealthMetricService.create(payload)
-  logger.info(f"API POST / 201 OK id={record.id}")
+  logger.info("API POST / 201 OK id=%s", record.id)
   return {"id": record.id}
 
 
 @router.get("/{health_metric_id}", response=HealthMetricOut)
 def get(request, health_metric_id: uuid.UUID):
-  logger.info(f"API GET /{health_metric_id}")
+  logger.info("API GET /%s", health_metric_id)
   record = HealthMetricService.get(health_metric_id)
-  logger.info(f"API GET /{health_metric_id} 200 OK user_id={record.id}")
+  logger.info("API GET /%s 200 OK id=%s", health_metric_id, record.id)
   return record
 
 
@@ -40,17 +40,17 @@ def list(request):
 
 @router.put("/{health_metric_id}", response=HealthMetricOut)
 def update(request, health_metric_id: uuid.UUID, payload: HealthMetricIn):  
-  logger.info(f"API PUT /{health_metric_id}")
+  logger.info("API PUT /%s", health_metric_id)
   record = HealthMetricService.update(health_metric_id, payload)
-  logger.info(f"API PUT /{health_metric_id} 200 ok")
+  logger.info("API PUT /%s 200 OK")
   return record
 
 
 @router.delete("/{health_metric_id}")
 def delete(request, health_metric_id: uuid.UUID):
-  logger.info(f"API DELETE /{health_metric_id} id%s", health_metric_id)
+  logger.info("API DELETE /%s", health_metric_id)
   HealthMetricService.delete(health_metric_id)
-  logger.info(f"API DELETE /{health_metric_id} 200 OK")
+  logger.info("API DELETE /%s 200 OK", health_metric_id)
   return {"success": True}
 
 

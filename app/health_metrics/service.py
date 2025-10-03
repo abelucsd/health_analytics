@@ -17,50 +17,50 @@ class HealthMetricService:
   @staticmethod
   def create(health_metric_in: HealthMetricIn):
     try:
-      logger.debug(f"CREATE model=HealthMetric")
+      logger.debug("CREATE model=HealthMetric")
       record = HealthMetricRepository.create(health_metric_in)
-      logger.debug(f"CREATE model=HealthMetric success id:{record.id}")
+      logger.debug("CREATE model=HealthMetric success")
       return record
     except IntegrityError as e:
-      logger.error(f"CREATE ERROR: {e}")
+      logger.error("CREATE ERROR: %s", exc_info=True)
       raise ValidationError(f"Failed to create health metric: {str(e)}", status_code=400)    
 
 
   @staticmethod
   def get(health_metric_id: uuid.UUID):
     try:
-      logger.debug(f"GET model=HealthMetric id:{health_metric_id}")
+      logger.debug("GET model=HealthMetric id:%s", health_metric_id)
       record = HealthMetricRepository.get_by_id(health_metric_id)     
-      logger.debug(f"GET model=HealthMetric success id:{record.id}") 
+      logger.debug("GET model=HealthMetric success id:%s", record.id) 
       return record
     except HealthMetric.DoesNotExist as e:
-      logger.error(f"GET ERROR: {e}")
+      logger.error("GET ERROR: %s", exc_info=True)
       raise HealthMetricNotFoundError(health_metric_id)    
 
 
   @staticmethod
   def list():
-    logger.debug(f"GET model=HealthMetric")
+    logger.debug("GET model=HealthMetric")
     record = HealthMetricRepository.list_all()
-    logger.debug(f"GET model=HealthMetric success")
+    logger.debug("GET model=HealthMetric success")
     return record
 
 
   @staticmethod
   def update(health_metric_id: uuid.UUID, health_metric_in: HealthMetricIn):        
     if health_metric_in.gender not in ["male", "female"]:
-      logger.error(f"UPDATE ERROR: InvalidGenderError {health_metric_in.gender}")
+      logger.error("UPDATE ERROR: InvalidGenderError %s", exc_info=True)
       raise InvalidGenderError(health_metric_in.gender)
     
     try:
-      logger.debug(f"UPDATE model=HealthMetric id:{health_metric_id}")
+      logger.debug("UPDATE model=HealthMetric id:%s", health_metric_id)
       record = HealthMetricRepository.update(health_metric_id, health_metric_in)
-      logger.debug(f"UPDATE model=HealthMetric success record:{record.id}")
+      logger.debug("UPDATE model=HealthMetric success")
     except HealthMetric.DoesNotExist as e:
-      logger.error("UPDATE ERROR: {e}")
+      logger.error("UPDATE ERROR: %s", exc_info=True)
       raise HealthMetricNotFoundError(health_metric_id)
     except IntegrityError as e:
-      logger.error("UPDATE ERROR: {e}")
+      logger.error("UPDATE ERROR: %s", exc_info=True)
       raise ValidationError(f"Failed to update health metric: {str(e)}", status_code=400)    
 
     return record
@@ -69,12 +69,12 @@ class HealthMetricService:
   @staticmethod
   def delete(health_metric_id: uuid.UUID):        
     try:
-      logger.debug(f"DELETE model=HealthMetric id:{health_metric_id}")
+      logger.debug("DELETE model=HealthMetric id:%s", health_metric_id)
       HealthMetricRepository.delete(health_metric_id)
-      logger.debug(f"DELETE model=HealthMetric success id:{health_metric_id}")
+      logger.debug("DELETE model=HealthMetric success id:%s", health_metric_id)
     except HealthMetric.DoesNotExist as e:
-      logger.error("DELETE ERROR: {e}")
+      logger.error("DELETE ERROR: %s", exc_info=True)
       raise HealthMetricNotFoundError(health_metric_id)
     except IntegrityError as e:
-      logger.error("DELETE ERROR: {e}")
+      logger.error("DELETE ERROR: %s", exc_info=True)
       raise ValidationError(f"Failed to delete health metric: {str(e)}", status_code=400)

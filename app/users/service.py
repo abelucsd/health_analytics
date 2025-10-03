@@ -17,50 +17,50 @@ class UserService:
   @staticmethod
   def create_user(user_in: UserIn):
     try:
-      logger.debug(f"CREATE model=User")
+      logger.debug("CREATE model=User")
       user = UserRepository.create(user_in)
-      logger.debug(f"CREATE model=User success user_id: {user.id}")
+      logger.debug("CREATE model=User success user_id: %s", user.id)
       return user
     except IntegrityError as e:
-      logger.error(f"CREATE ERROR: {e}")
+      logger.error("CREATE ERROR: %s", exc_info=True)
       raise ValidationError(f"Failed to create user: {str(e)}", status_code=400)    
 
 
   @staticmethod
   def get_user(user_id: uuid.UUID):
     try:
-      logger.debug(f"READ model=User id%s", user_id)
+      logger.debug("READ model=User id%s", user_id)
       user = UserRepository.get_by_id(user_id)
-      logger.debug(f"READ model=User success user_id: id%s", user_id)
+      logger.debug("READ model=User success user_id: id%s", user_id)
       return user
     except User.DoesNotExist as e:
-      logger.error(f"READ ERROR: {e}")
+      logger.error("READ ERROR: %s", exc_info=True)
       raise UserNotFoundError(user_id)    
 
 
   @staticmethod
   def list_users():
-    logger.debug(f"READ model=User")
+    logger.debug("READ model=User")
     users = UserRepository.list_all()
-    logger.debug(f"READ model=User success")
+    logger.debug("READ model=User success")
     return users
 
 
   @staticmethod
   def update_user(user_id: uuid.UUID, user_in: UserIn):        
     if user_in.role not in ["user", "admin"]:
-      logger.error(f"UPDATE ERROR: InvalidRoleError {user_in.role}")
+      logger.error("UPDATE ERROR: InvalidRoleError %s", exc_info=True)
       raise InvalidRoleError(user_in.role)
     
     try:
-      logger.debug(f"UPDATE model=User user_id: id%s", user_id)
+      logger.debug("UPDATE model=User user_id: id%s", user_id)
       user = UserRepository.update(user_id, user_in)
-      logger.debug(f"READ model=User success user_id: id%s", user_id)
+      logger.debug("READ model=User success user_id: id%s", user_id)
     except User.DoesNotExist as e:
-      logger.error(f"UPDATE ERROR: {e}")
+      logger.error("UPDATE ERROR: %s", exc_info=True)
       raise UserNotFoundError(user_id)
     except IntegrityError as e:
-      logger.error(f"UPDATE ERROR: {e}")
+      logger.error("UPDATE ERROR: %s", exc_info=True)
       raise ValidationError(f"Failed to update user: {str(e)}", status_code=400)    
 
     return user
@@ -69,12 +69,12 @@ class UserService:
   @staticmethod
   def delete_user(user_id: uuid.UUID):        
     try:
-      logger.debug(f"DELETE model=User user_id: id%s", user_id)
+      logger.debug("DELETE model=User user_id: id%s", user_id)
       UserRepository.delete(user_id)
-      logger.debug(f"DELETE model=User success user_id: id%s", user_id)
+      logger.debug("DELETE model=User success user_id: id%s", user_id)
     except User.DoesNotExist as e:
-      logger.error(f"DELETE ERROR: {e}")
+      logger.error("DELETE ERROR: %s", exc_info=True)
       raise UserNotFoundError(user_id)
     except IntegrityError as e:
-      logger.error(f"DELETE ERROR: {e}")
+      logger.error("DELETE ERROR: %s", exc_info=True)
       raise ValidationError(f"Failed to delete user: {str(e)}", status_code=400)
