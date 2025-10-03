@@ -22,7 +22,7 @@ def explain_features(request, id: str, model_type: str):
   try:
     id = uuid.UUID(id)
     shap_vals = AnalyticsService.explain_features(id, model_type)  
-    return JsonResponse({"data": shap_vals}, status=200)
+    return shap_vals
   except ValueError:
     return JsonResponse({"error": "Sample not found"}, status=404)
   except Exception:

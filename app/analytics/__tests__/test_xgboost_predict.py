@@ -14,10 +14,7 @@ class TestXGBoostPredict:
     factory = HealthMetricFactory()
     health_metric = factory.create()
     id = health_metric.id
-    model_type = "bmi"
-
-    booster = xgb.Booster()
-    booster.load_model(os.path.join(MODEL_PATH, f"xgb_model_{model_type}.json"))
+    model_type = "bmi"    
 
     mocker.patch("health_metrics.models.HealthMetric.objects.get", return_value=health_metric)
 
