@@ -17,9 +17,9 @@ class UserService:
   @staticmethod
   def create_user(user_in: UserIn):
     try:
-      logger.info(f"CREATE model=User")
+      logger.debug(f"CREATE model=User")
       user = UserRepository.create(user_in)
-      logger.info(f"CREATE model=User success user_id: {user.id}")
+      logger.debug(f"CREATE model=User success user_id: {user.id}")
       return user
     except IntegrityError as e:
       logger.error(f"CREATE ERROR: {e}")
@@ -29,9 +29,9 @@ class UserService:
   @staticmethod
   def get_user(user_id: uuid.UUID):
     try:
-      logger.info(f"READ model=User id%s", user_id)
+      logger.debug(f"READ model=User id%s", user_id)
       user = UserRepository.get_by_id(user_id)
-      logger.info(f"READ model=User success user_id: id%s", user_id)
+      logger.debug(f"READ model=User success user_id: id%s", user_id)
       return user
     except User.DoesNotExist as e:
       logger.error(f"READ ERROR: {e}")
@@ -40,9 +40,9 @@ class UserService:
 
   @staticmethod
   def list_users():
-    logger.info(f"READ model=User")
+    logger.debug(f"READ model=User")
     users = UserRepository.list_all()
-    logger.info(f"READ model=User success")
+    logger.debug(f"READ model=User success")
     return users
 
 
@@ -53,9 +53,9 @@ class UserService:
       raise InvalidRoleError(user_in.role)
     
     try:
-      logger.info(f"UPDATE model=User user_id: id%s", user_id)
+      logger.debug(f"UPDATE model=User user_id: id%s", user_id)
       user = UserRepository.update(user_id, user_in)
-      logger.info(f"READ model=User success user_id: id%s", user_id)
+      logger.debug(f"READ model=User success user_id: id%s", user_id)
     except User.DoesNotExist as e:
       logger.error(f"UPDATE ERROR: {e}")
       raise UserNotFoundError(user_id)
@@ -69,9 +69,9 @@ class UserService:
   @staticmethod
   def delete_user(user_id: uuid.UUID):        
     try:
-      logger.info(f"DELETE model=User user_id: id%s", user_id)
+      logger.debug(f"DELETE model=User user_id: id%s", user_id)
       UserRepository.delete(user_id)
-      logger.info(f"DELETE model=User success user_id: id%s", user_id)
+      logger.debug(f"DELETE model=User success user_id: id%s", user_id)
     except User.DoesNotExist as e:
       logger.error(f"DELETE ERROR: {e}")
       raise UserNotFoundError(user_id)
