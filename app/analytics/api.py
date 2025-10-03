@@ -1,3 +1,4 @@
+import logging
 from typing import List
 from ninja import NinjaAPI, Schema
 from ninja import Router
@@ -11,6 +12,7 @@ from .service import AnalyticsService
 
 
 router = Router()
+logger = logging.getLogger("analytics")
 
 
 @router.get("/explain/{id}")
@@ -20,10 +22,14 @@ def explain_features(request, id: str, model_type: str):
   """
   print("[analytics.api] GET explain_features")
   try:
+    logger.info("API GET /explain/%s", id)
     id = uuid.UUID(id)
     shap_vals = AnalyticsService.explain_features(id, model_type)  
+    logger.info("API GET /explain/%s 200 OK", id)
     return shap_vals
-  except ValueError:
+  except ValueError as e:
+    logger.error("Error: %s", exc_info=True)
     return JsonResponse({"error": "Sample not found"}, status=404)
-  except Exception:
+  except Exception as e:
+    logger.error("Error: %s", exc_info=True)
     return JsonResponse({"error": "Internal server error"}, status=500)
