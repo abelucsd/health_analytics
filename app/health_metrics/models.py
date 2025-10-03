@@ -51,5 +51,5 @@ class HealthMetric(models.Model):
 
 
   def __str__(self):
-    return f"{self.survey_code} - {self.age}y"
+    return f"{self.id} - {self.age}y"
   

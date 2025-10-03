@@ -20,18 +20,17 @@ class TestAnalyticsApi:
 
     response = authenticated_client.get(
       f"/api/analytics/explain/{uuid.uuid4()}?model_type={model_type}",      
-    )    
+    )
 
     response_body = response.json()
 
     assert response.status_code == 200
-
-    data = response_body["data"]
-    for item in data:
-        assert "feature" in item
-        assert "importance" in item
     
-    top_3 = [f["feature"] for f in response_body['data'][:3]]
+    for item in response_body:
+      assert "feature" in item
+      assert "importance" in item
+    
+    top_3 = [f["feature"] for f in response_body[:3]]
 
     assert "weight" in top_3    
 
