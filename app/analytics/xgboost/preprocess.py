@@ -1,5 +1,7 @@
 # TODO: Test with a table
+from typing import List
 import uuid
+from django.forms import model_to_dict
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -61,12 +63,12 @@ def preprocess(result_field: str):
   # One-hot encode string/categorical features
   categorical_cols = ['gender', 'sleep_quality', 'alcohol_consumption', 'smoking_level', 'diet_type', 'exercise_type', 'sunlight_exposure']
   categorical_cols = [c for c in categorical_cols if c in X.columns]
-  X = pd.get_dummies(X, columns=categorical_cols, drop_first=True)
+  X = pd.get_dummies(X, columns=categorical_cols, drop_first=False)
   
   return X, y
 
 
-def preprocess_queryset(id: uuid.UUID):
+def preprocess_queryset(id: uuid.UUID, train_columns: List[str]):
   """
   Query 1 row from HealthMetric database for analysis.
   """
@@ -100,20 +102,22 @@ def preprocess_queryset(id: uuid.UUID):
       "diet_type",
       "exercise_type",
       "sunlight_exposure",
-    ]  
+    ]        
 
-    df = pd.DataFrame([{col: getattr(qs, col) for col in columns_to_keep}])
-    print(df.columns)
+    df = pd.DataFrame([{col: getattr(qs, col) for col in columns_to_keep}])    
 
     # Drop other target fields
     targets = [r for r in TARGET_FIELDS]
     df = df.drop(columns=targets)
 
     # One-hot encode categorical columns
-    categorical_cols = [c for c in CATEGORICAL_COLS if c in df.columns]
-    df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+    categorical_cols = ['gender', 'sleep_quality', 'alcohol_consumption', 'smoking_level', 'diet_type', 'exercise_type', 'sunlight_exposure']
+    categorical_cols = [c for c in categorical_cols if c in df.columns]
 
-    print(df.columns)
+    df = pd.get_dummies(df, columns=categorical_cols, drop_first=False)
+
+    # Align with the training columns
+    df = df.reindex(columns=train_columns, fill_value=0)  
 
     return df
   except Exception as e:

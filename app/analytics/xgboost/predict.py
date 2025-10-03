@@ -19,9 +19,7 @@ def run_shap(id: uuid.UUID, model_type: str):
     # Load the model
     print("Loading the model")
     booster = xgb.Booster()
-    booster.load_model(os.path.join(MODEL_PATH, f"xgb_model_{model_type}.json"))
-
-    print(booster.feature_names)
+    booster.load_model(os.path.join(MODEL_PATH, f"xgb_model_{model_type}.json"))    
 
     print("Setting SHAP")
     # Setup SHAP
@@ -29,22 +27,23 @@ def run_shap(id: uuid.UUID, model_type: str):
 
     print("Preprocess the database row")
     # Preprocess row data
-    row = preprocess_queryset(id)  
+    row = preprocess_queryset(id, booster.feature_names)  
 
     print("Execute SHAP analysis")
     # Execute shap analysis
     shap_values = explainer.shap_values(row)
+    
 
     print("Set feature_importance data.")
     feature_importance = pd.DataFrame({
       "feature": row.columns,
-      "importance": np.abs(shap_values.values)
+      "importance": np.abs(shap_values).flatten()
     })
     
     # sort descending according to feature importance.
     feature_importance = feature_importance.sort_values(by="importance", ascending=False)
 
-    print("Complete")
+    print("Complete")    
 
     # To JSON format
     return feature_importance.to_dict(orient="records")

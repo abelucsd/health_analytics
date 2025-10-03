@@ -1,17 +1,19 @@
+import os
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
+django.setup()
 import argparse
 from sklearn.model_selection import train_test_split
-import xgboost as xgb
 from sklearn.metrics import root_mean_squared_error, r2_score, mean_squared_error
+import xgboost as xgb
 import shap
 import pandas as pd
 import numpy as np
 from .preprocess import preprocess
 
-import os
-import django
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
-django.setup()
+
+
 
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "models")
 
