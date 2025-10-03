@@ -1,12 +1,22 @@
+"""
+Only call these functions in development via command line.
+i.e. python app.analytics.xgboost.train --target bmi
+"""
+import os
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
+django.setup()
+import argparse
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import root_mean_squared_error, r2_score, mean_squared_error
 import xgboost as xgb
-from sklearn.metrics import root_mean_squared_error, r2_score
 import shap
 import pandas as pd
 import numpy as np
 from .preprocess import preprocess
 
 
+MODEL_DIR = os.path.join(os.path.dirname(__file__), "models")
 
 def run_xgboost():
   '''
@@ -40,11 +50,11 @@ def train(model, X_train, X_test, y_train, y_test):
   # evaluate
   y_pred = model.predict(X_test)
 
-  rmse = root_mean_squared_error(y_test, y_pred, squared=False)
+  rmse = root_mean_squared_error(y_test, y_pred)
   r2 = r2_score(y_test, y_pred)
 
-  print(f"RMSE: {rmse: .2f}")
-  print(f"R^2: {r2:.2f}")
+  print(f"RMSE: {rmse: .2f}\n")
+  print(f"R^2: {r2:.2f}\n")
 
   return {
     "model": model,
@@ -71,23 +81,55 @@ def run_shap(model, X_test):
   return feature_importance.to_dict(orient="records")
   
 
-def run_lifestyle_analysis():  
+def run_lifestyle_analysis(target: str):  
+  print(f"[train.py] Starting preprocess()")
 
   # lifestyle dataset
-  X, y = preprocess()
+  X, y = preprocess(target)
 
   X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
   )
 
+  print(f"[train.py] Creating xgboost model")
   model = run_xgboost()
 
+  print(f"[train.py] Training xgboost model")
   result = train(model, X_train, X_test, y_train, y_test)
 
+  print(f"[train.py] Running Shap")
   shap_importance_json = run_shap(model, X_test)
+
+  print(f"[train.py] Completed the analysis.")
+
+  print(
+    {
+      "rmse": result["rmse"],
+      "r2": result["r2"],
+      "feature_importance": shap_importance_json
+    }
+  )
+
+  # save the model
+  print(f"[train.py] Saving the model.")
+  MODEL_PATH = os.path.join(MODEL_DIR, f"xgb_model_{target}.json")
+  model.save_model(MODEL_PATH)
+
 
   return {
     "rmse": result["rmse"],
     "r2": result["r2"],
     "feature_importance": shap_importance_json
   }
+
+
+if __name__ == "__main__":
+  try:
+    print(f"[train.py] running run_lifestyle_analysis()")
+    parser = argparse.ArgumentParser(description="Train an XGBoost Model.")
+    parser.add_argument("--target", type=str, required=True, help="The y output attribute name.")
+
+    args = parser.parse_args()
+    run_lifestyle_analysis(args.target)
+  except Exception as e:
+    print(f"[analysis.xgboost.train] Error: {e}")

@@ -19,12 +19,14 @@ from ninja import NinjaAPI
 from ninja.security import django_auth
 from users.api import router as users_router
 from health_metrics.api import router as health_metrics_router
+from analytics.api import router as analytics_router
 from core.exceptions import AppError, app_error_handler
 
 api = NinjaAPI()
 
 api.add_router("/users", users_router)
 api.add_router("/health_metrics", health_metrics_router)
+api.add_router("/analytics/", analytics_router)
 
 api.add_exception_handler(AppError, app_error_handler)
 
