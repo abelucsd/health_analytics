@@ -1,5 +1,5 @@
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from health_metrics.models import HealthMetricGenderChoices
 from ninja import Schema
 
@@ -67,5 +67,13 @@ class HealthMetricOut(Schema):
   exercise_type : str
   sunlight_exposure : str
 
+  ranges: Dict[str, Any] = None
+
   class Config:
     extra = "forbid"
+    orm_mode = True
+
+
+class HealthMetricListOut(Schema):
+  items: List[HealthMetricOut]
+  ranges: Dict[str, Any]

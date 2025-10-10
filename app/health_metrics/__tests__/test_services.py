@@ -36,6 +36,24 @@ class TestHealthServiceService:
     assert records == qs
 
 
+  def test_latest(self, mocker, mock_record_data):
+    mock_record = mock_record_data.mock_record()
+    mocker.patch("health_metrics.service.HealthMetricRepository.get_latest", return_value=mock_record)
+
+    record = HealthMetricService.get_latest()
+
+    assert record == mock_record
+
+  
+  def test_second_latest(self, mocker, mock_record_data):
+    mock_record = mock_record_data.mock_record()
+    mocker.patch("health_metrics.service.HealthMetricRepository.get_second_latest", return_value=mock_record)
+
+    record = HealthMetricService.get_second_latest()
+
+    assert record == mock_record
+
+
   def test_update(self, mocker, mock_record_data):
     mock_record = mock_record_data.mock_record()
     mock_record_in = mock_record_data.mock_record_in()

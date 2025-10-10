@@ -33,6 +33,29 @@ class TestHealthMetricRepository:
 
     assert list(fetched_records)[0].weight == record.weight
 
+  
+  def test_get_latest(self, health_metric_factory):
+    record = health_metric_factory.create()
+    record.save()
+    record2 = health_metric_factory.create()
+    record2.save()
+
+    fetched_record = HealthMetricRepository.get_latest()
+
+    assert fetched_record.weight == record.weight
+
+
+  def test_get_second_latest(self, health_metric_factory):
+    record = health_metric_factory.create()    
+    record.save()
+    record2 = health_metric_factory.create()
+    record2.save()
+
+    fetched_record = HealthMetricRepository.get_second_latest()
+
+    assert fetched_record.weight == record2.weight
+
+
 
   def test_update(self, health_metric_factory, mock_record_data):
     record_in = mock_record_data.mock_record_in()

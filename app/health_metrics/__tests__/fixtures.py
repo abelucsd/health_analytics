@@ -3,6 +3,12 @@ import uuid
 from health_metrics.models import HealthMetric
 from health_metrics.schemas import HealthMetricIn
 
+@pytest.fixture
+@pytest.mark.django_db
+def clean_db():
+  HealthMetric.objects.all().delete()
+  yield
+  HealthMetric.objects.all().delete()
 
 
 @pytest.fixture

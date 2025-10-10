@@ -1,15 +1,25 @@
 import json
-
+import datetime
 from django.forms import model_to_dict
 import pytest
 from health_metrics.models import HealthMetric
 from health_metrics.schemas import HealthMetricIn
-from .fixtures import health_metric_factory, mock_record_data
+from .fixtures import health_metric_factory, mock_record_data, clean_db
 from health_metrics.repository import HealthMetricRepository
 from core.tests.conftest import authenticated_client, mock_authenticate
 
 @pytest.mark.django_db
 class TestE2EHealthMetrics:
+
+  @classmethod
+  def setUpClass(cls):
+      super().setUpClass()      
+      HealthMetric.objects.all().delete()
+    
+  @classmethod
+  def tearDownClass(cls):      
+      HealthMetric.objects.all().delete()
+      super().tearDownClass()
   
   def test_create(self, authenticated_client, mock_record_data):
     payload = mock_record_data.mock_payload()
@@ -20,6 +30,35 @@ class TestE2EHealthMetrics:
     )
     
     assert response.status_code == 200
+
+
+  def test_get_latest(self, authenticated_client, health_metric_factory):
+    record = health_metric_factory.create()
+    record.save()
+
+    response = authenticated_client.get(
+      f"/api/health_metrics/latest"      
+    )
+    response_body = response.json()
+
+    assert response.status_code == 200
+    assert response_body["id"] == record.id
+
+  
+  def test_get_second_latest(self, authenticated_client, health_metric_factory, clean_db):
+    record = health_metric_factory.create(created_at=datetime.datetime(2025, 10, 10, 12, 0, 0))
+    record.save()
+
+    record2 = health_metric_factory.create(created_at=datetime.datetime(2025, 10, 10, 12, 0, 10))
+    record2.save()
+
+    response = authenticated_client.get(
+      f"/api/health_metrics/previous"      
+    )
+    response_body = response.json()
+
+    assert response.status_code == 200
+    assert response_body["id"] == record.id
 
 
   def test_get(self, authenticated_client, health_metric_factory):
@@ -47,7 +86,7 @@ class TestE2EHealthMetrics:
     response_body = response.json()
 
     assert response.status_code == 200
-    assert response_body[0]["weight"] == record_list[0].weight
+    assert response_body["items"][0]["weight"] == record_list[0].weight
 
      
   def test_update(self, authenticated_client, health_metric_factory):

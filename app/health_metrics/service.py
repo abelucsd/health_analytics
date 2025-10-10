@@ -36,6 +36,27 @@ class HealthMetricService:
     except HealthMetric.DoesNotExist as e:
       logger.error("GET ERROR", exc_info=True)
       raise HealthMetricNotFoundError(health_metric_id)    
+    
+  @staticmethod
+  def get_latest():
+    try:
+      logger.debug("GET model=HealthMetric")
+      record = HealthMetricRepository.get_latest()
+      logger.debug("GET model=HealthMetric success id:%s", record.id) 
+      return record
+    except Exception as e:
+      logger.error("GET ERROR", exc_info=True)
+
+  
+  @staticmethod
+  def get_second_latest():
+    try:
+      logger.debug("GET model=HealthMetric")
+      record = HealthMetricRepository.get_second_latest()
+      logger.debug("GET model=HealthMetric success id:%s", record.id) 
+      return record
+    except Exception as e:
+      logger.error("GET ERROR", exc_info=True)
 
 
   @staticmethod
