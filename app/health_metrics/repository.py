@@ -19,6 +19,16 @@ class HealthMetricRepository:
   def list_all():
     return HealthMetric.objects.all()
   
+
+  @staticmethod
+  def get_latest():
+    return HealthMetric.objects.latest('created_at')
+  
+  
+  @staticmethod
+  def get_second_latest():
+    return HealthMetric.objects.order_by('-created_at')[1]
+  
   
   @staticmethod
   def update(health_metric_id: uuid.UUID, health_metric_in: HealthMetricIn):

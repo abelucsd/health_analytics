@@ -22,6 +22,22 @@ def create(request, payload: HealthMetricIn):
   return {"id": record.id}
 
 
+@router.get("/latest", response=HealthMetricOut)
+def get_latest(request):
+  logger.info("API POST /latest") 
+  record = HealthMetricService.get_latest()
+  # logger.info("API POST / 200 OK id=%s", record.id)
+  return record
+
+
+@router.get("/previous", response=HealthMetricOut)
+def get_second_latest(request):
+  logger.info("API POST /previous") 
+  record = HealthMetricService.get_second_latest()
+  logger.info("API POST / 200 OK id=%s", record.id)
+  return record
+
+
 @router.get("/{health_metric_id}", response=HealthMetricOut)
 def get(request, health_metric_id: uuid.UUID):
   logger.info("API GET /%s", health_metric_id)

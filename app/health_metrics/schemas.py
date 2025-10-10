@@ -69,3 +69,4 @@ class HealthMetricOut(Schema):
 
   class Config:
     extra = "forbid"
+    orm_mode = True

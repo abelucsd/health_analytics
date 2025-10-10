@@ -2,7 +2,7 @@ import json
 import pytest
 import uuid
 from django.forms.models import model_to_dict
-from health_metrics.schemas import HealthMetricIn
+from health_metrics.schemas import HealthMetricIn, HealthMetricOut
 from health_metrics.models import HealthMetric
 from .fixtures import health_metric_factory, mock_record_data
 from core.tests.conftest import authenticated_client, mock_authenticate
@@ -25,6 +25,30 @@ class TestHealthMetrics:
 
     assert response.status_code == 200
     assert response.json() == {"id": str(mock_record.id)}
+
+
+  def test_get_latest(self, authenticated_client, mocker, health_metric_factory):    
+    qs = health_metric_factory.queryset()    
+    record = qs.first()            
+    mocker.patch("health_metrics.api.HealthMetricService.get_latest", return_value=record)
+    
+    response = authenticated_client.get(f"/api/health_metrics/latest")
+    response_body = response.json()    
+
+    assert response.status_code == 200
+    assert response_body["id"] == record.id
+
+
+  def test_get_second_latest(self, authenticated_client, mocker, health_metric_factory):    
+    qs = health_metric_factory.queryset()    
+    record = qs.first()            
+    mocker.patch("health_metrics.api.HealthMetricService.get_second_latest", return_value=record)
+    
+    response = authenticated_client.get(f"/api/health_metrics/previous")
+    response_body = response.json()    
+
+    assert response.status_code == 200
+    assert response_body["id"] == record.id
 
     
   def test_get(self, authenticated_client, mocker, health_metric_factory):
@@ -52,6 +76,9 @@ class TestHealthMetrics:
 
     assert response.status_code == 200
     assert response_body[0]["weight"] == record_list[0].weight
+
+
+  
 
     
   def test_update(self, authenticated_client, mocker, health_metric_factory, mock_record_data):

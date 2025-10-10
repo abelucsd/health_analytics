@@ -22,6 +22,35 @@ class TestE2EHealthMetrics:
     assert response.status_code == 200
 
 
+  def test_get_latest(self, authenticated_client, health_metric_factory):
+    record = health_metric_factory.create()
+    record.save()
+
+    response = authenticated_client.get(
+      f"/api/health_metrics/latest"      
+    )
+    response_body = response.json()
+
+    assert response.status_code == 200
+    assert response_body["id"] == record.id
+
+  
+  def test_get_second_latest(self, authenticated_client, health_metric_factory):
+    record = health_metric_factory.create()
+    record.save()
+
+    record2 = health_metric_factory.create()
+    record2.save()
+
+    response = authenticated_client.get(
+      f"/api/health_metrics/previous"      
+    )
+    response_body = response.json()
+
+    assert response.status_code == 200
+    assert response_body["id"] == record2.id
+
+
   def test_get(self, authenticated_client, health_metric_factory):
     record = health_metric_factory.create()
     record.save()
