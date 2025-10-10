@@ -75,10 +75,7 @@ class TestHealthMetrics:
     response_body = response.json()
 
     assert response.status_code == 200
-    assert response_body[0]["weight"] == record_list[0].weight
-
-
-  
+    assert response_body["items"][0]["weight"] == record_list[0].weight
 
     
   def test_update(self, authenticated_client, mocker, health_metric_factory, mock_record_data):

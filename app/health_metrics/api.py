@@ -6,8 +6,9 @@ from ninja import File
 import uuid
 from django.shortcuts import get_object_or_404
 from health_metrics.models import HealthMetric
-from health_metrics.schemas import HealthMetricIn, HealthMetricOut
+from health_metrics.schemas import HealthMetricIn, HealthMetricOut, HealthMetricListOut
 from health_metrics.service import HealthMetricService
+from health_metrics.data import HEALTH_METRIC_RANGES
 
 
 router = Router()
@@ -26,7 +27,8 @@ def create(request, payload: HealthMetricIn):
 def get_latest(request):
   logger.info("API POST /latest") 
   record = HealthMetricService.get_latest()
-  # logger.info("API POST / 200 OK id=%s", record.id)
+  logger.info("API POST / 200 OK id=%s", record.id)  
+  record.ranges = HEALTH_METRIC_RANGES
   return record
 
 
@@ -35,6 +37,7 @@ def get_second_latest(request):
   logger.info("API POST /previous") 
   record = HealthMetricService.get_second_latest()
   logger.info("API POST / 200 OK id=%s", record.id)
+  record.ranges = HEALTH_METRIC_RANGES
   return record
 
 
@@ -43,15 +46,21 @@ def get(request, health_metric_id: uuid.UUID):
   logger.info("API GET /%s", health_metric_id)
   record = HealthMetricService.get(health_metric_id)
   logger.info("API GET /%s 200 OK id=%s", health_metric_id, record.id)
+  record.ranges = HEALTH_METRIC_RANGES
   return record
 
 
-@router.get("/", response=List[HealthMetricOut])
+@router.get("/", response=HealthMetricListOut)
 def list(request):
   logger.info(f"API GET /")
-  record = HealthMetricService.list()  
+  records = HealthMetricService.list()  
   logger.info(f"API GET / 200 OK")
-  return record
+  # record.ranges = HEALTH_METRIC_RANGES
+  # items = [HealthMetricOut.from_orm(record) for record in records]
+  response = {}  
+  response["items"] = records
+  response["ranges"] = HEALTH_METRIC_RANGES  
+  return response
 
 
 @router.put("/{health_metric_id}", response=HealthMetricOut)
