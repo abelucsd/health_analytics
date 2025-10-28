@@ -26,7 +26,7 @@ class TestHealthMetrics:
     assert response.status_code == 200
     assert response.json() == {"id": str(mock_record.id)}
 
-
+  
   def test_get_latest(self, authenticated_client, mocker, health_metric_factory):    
     qs = health_metric_factory.queryset()    
     record = qs.first()            

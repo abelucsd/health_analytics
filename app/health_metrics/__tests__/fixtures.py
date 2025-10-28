@@ -22,7 +22,7 @@ def health_metric_factory(mocker):
       return f"<QuerySet {list.__repr__(self)}>"
     
   class HealthMetricFactory:    
-    def create(self, **kwargs):
+    def create(self, save_to_db=False, **kwargs):
       defaults = {
         "id": str(uuid.uuid4()),         # UUID as string
         "age": 30,                       # typical adult
@@ -54,7 +54,15 @@ def health_metric_factory(mocker):
         "sunlight_exposure": "Moderate"  # Low / Moderate / High
       }
       defaults.update(kwargs)
-      return HealthMetric(**defaults)
+      obj = HealthMetric(**defaults)
+      if save_to_db:
+        # obj = HealthMetric.objects.create(**defaults)
+        obj.save()
+        if "created_at" in kwargs:
+          obj.created_at = kwargs["created_at"]
+          obj.save(update_fields=["created_at"])          
+      return obj
+      # return HealthMetric(**defaults)
         
     def queryset(self):      
       return FakeQuerySet([self.create()])

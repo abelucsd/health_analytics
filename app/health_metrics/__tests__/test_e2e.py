@@ -34,7 +34,7 @@ class TestE2EHealthMetrics:
 
 
   def test_get_latest(self, authenticated_client, health_metric_factory):
-    record = health_metric_factory.create()
+    record = health_metric_factory.create(save_to_db=True)
     record.save()
 
     response = authenticated_client.get(
@@ -47,19 +47,23 @@ class TestE2EHealthMetrics:
 
   
   def test_get_second_latest(self, authenticated_client, health_metric_factory, clean_db):
-    record = health_metric_factory.create(created_at=datetime.datetime(2025, 10, 10, 12, 0, 0))    
-    record.save()
+    record = health_metric_factory.create(
+      created_at=datetime(2025, 10, 10, 12, 0, 0),
+      save_to_db=True
+    )
 
-    record2 = health_metric_factory.create(created_at=datetime.datetime(2025, 10, 10, 13, 0, 20))    
-    record2.save()
+    record2 = health_metric_factory.create(
+        created_at=datetime(2025, 10, 10, 13, 0, 20),
+        save_to_db=True
+    )
 
     response = authenticated_client.get(
       f"/api/health_metrics/previous"      
     )
-    response_body = response.json()
-    print(response_body)
+    
+    response_body = response.json()        
+    assert response_body["id"] == str(record.id)
 
-    assert response_body["created_at"] == str(record.created_at)
 
 
   def test_get_target_metrics(self, authenticated_client, mocker):

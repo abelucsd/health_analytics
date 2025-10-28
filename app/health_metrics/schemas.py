@@ -70,11 +70,11 @@ class HealthMetricOut(Schema):
 
   ranges: Dict[str, Any] = None
 
-  # created_at: datetime  # ✅ use class, not module
+  created_at: Optional[datetime] = None
 
   model_config = {
       "extra": "forbid",
-      "from_attributes": True,  # replaces orm_mode
+      "from_attributes": True,
   }
 
 
