@@ -1,5 +1,6 @@
 import json
-import datetime
+from datetime import datetime
+from django.utils.dateparse import parse_datetime
 from django.forms import model_to_dict
 import pytest
 from health_metrics.models import HealthMetric
@@ -46,19 +47,28 @@ class TestE2EHealthMetrics:
 
   
   def test_get_second_latest(self, authenticated_client, health_metric_factory, clean_db):
-    record = health_metric_factory.create(created_at=datetime.datetime(2025, 10, 10, 12, 0, 0))
+    record = health_metric_factory.create(created_at=datetime.datetime(2025, 10, 10, 12, 0, 0))    
     record.save()
 
-    record2 = health_metric_factory.create(created_at=datetime.datetime(2025, 10, 10, 12, 0, 10))
+    record2 = health_metric_factory.create(created_at=datetime.datetime(2025, 10, 10, 13, 0, 20))    
     record2.save()
 
     response = authenticated_client.get(
       f"/api/health_metrics/previous"      
     )
     response_body = response.json()
+    print(response_body)
 
+    assert response_body["created_at"] == str(record.created_at)
+
+
+  def test_get_target_metrics(self, authenticated_client, mocker):
+    target_metrics = ["bmi", "blood_pressure", "heart_rate", "cholesterol", "glucose", "insulin", "stress_level"]
+    mocker.patch("health_metrics.api.HealthMetricService.get_target_metrics", return_value=target_metrics)
+    response = authenticated_client.get(f"/api/health_metrics/target_metrics")
+    response_body = response.json()
     assert response.status_code == 200
-    assert response_body["id"] == record.id
+    assert all(metric in target_metrics for metric in response_body)
 
 
   def test_get(self, authenticated_client, health_metric_factory):

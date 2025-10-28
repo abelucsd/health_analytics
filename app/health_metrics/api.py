@@ -25,20 +25,28 @@ def create(request, payload: HealthMetricIn):
 
 @router.get("/latest", response=HealthMetricOut)
 def get_latest(request):
-  logger.info("API POST /latest") 
+  logger.info("API GET /latest") 
   record = HealthMetricService.get_latest()
-  logger.info("API POST / 200 OK id=%s", record.id)  
+  logger.info("API GET / 200 OK id=%s", record.id)  
   record.ranges = HEALTH_METRIC_RANGES
   return record
 
 
 @router.get("/previous", response=HealthMetricOut)
 def get_second_latest(request):
-  logger.info("API POST /previous") 
+  logger.info("API GET /previous") 
   record = HealthMetricService.get_second_latest()
-  logger.info("API POST / 200 OK id=%s", record.id)
+  logger.info("API GET / 200 OK id=%s", record.id)
   record.ranges = HEALTH_METRIC_RANGES
   return record
+
+
+@router.get("/target_metrics")
+def get_target_metrics(request):
+  logger.info("API GET /target_metrics")
+  records = HealthMetricService.get_target_metrics()
+  logger.info("API GET / 200 ok")
+  return records
 
 
 @router.get("/{health_metric_id}", response=HealthMetricOut)

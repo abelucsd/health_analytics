@@ -50,6 +50,15 @@ class TestHealthMetrics:
     assert response.status_code == 200
     assert response_body["id"] == record.id
 
+  
+  def test_get_target_metrics(self, authenticated_client, mocker):
+    target_metrics = ["bmi", "blood_pressure", "heart_rate", "cholesterol", "glucose", "insulin", "stress_level"]
+    mocker.patch("health_metrics.api.HealthMetricService.get_target_metrics", return_value=target_metrics)
+    response = authenticated_client.get(f"/api/health_metrics/target_metrics")
+    response_body = response.json()
+    assert response.status_code == 200
+    assert all(metric in target_metrics for metric in response_body)
+
     
   def test_get(self, authenticated_client, mocker, health_metric_factory):
     health_metric_factory.create()

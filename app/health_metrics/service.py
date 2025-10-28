@@ -58,6 +58,22 @@ class HealthMetricService:
     except Exception as e:
       logger.error("GET ERROR", exc_info=True)
 
+  
+  @staticmethod
+  def get_target_metrics():
+    try:
+      logger.debug("GET")
+      target_metrics = [
+        "bmi", "blood_pressure", "heart_rate", "cholesterol", 
+        "glucose", "insulin", "stress_level"
+      ]
+      fields = HealthMetricRepository.get_fields()      
+      target_metrics = [metric for metric in target_metrics if metric in fields]
+      logger.debug("GET success")
+      return target_metrics
+    except Exception as e:
+      logger.error("GET ERROR", exc_info=True)
+
 
   @staticmethod
   def list():

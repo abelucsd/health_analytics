@@ -29,6 +29,12 @@ class HealthMetricRepository:
   def get_second_latest():
     return HealthMetric.objects.order_by('-created_at')[1]
   
+
+  @staticmethod
+  def get_fields():
+    fields = [f.name for f in HealthMetric._meta.get_fields() if f.concrete]
+    return fields
+  
   
   @staticmethod
   def update(health_metric_id: uuid.UUID, health_metric_in: HealthMetricIn):

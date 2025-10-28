@@ -55,6 +55,10 @@ class TestHealthMetricRepository:
 
     assert fetched_record.weight == record2.weight
 
+    
+  def test_get_fields(self):
+    fetched_record = HealthMetricRepository.get_fields()
+    assert "bmi" in fetched_record
 
 
   def test_update(self, health_metric_factory, mock_record_data):

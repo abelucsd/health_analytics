@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 from typing import Optional, List, Dict, Any
 from health_metrics.models import HealthMetricGenderChoices
@@ -69,9 +70,12 @@ class HealthMetricOut(Schema):
 
   ranges: Dict[str, Any] = None
 
-  class Config:
-    extra = "forbid"
-    orm_mode = True
+  # created_at: datetime  # ✅ use class, not module
+
+  model_config = {
+      "extra": "forbid",
+      "from_attributes": True,  # replaces orm_mode
+  }
 
 
 class HealthMetricListOut(Schema):

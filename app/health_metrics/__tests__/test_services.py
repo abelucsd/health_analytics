@@ -53,6 +53,23 @@ class TestHealthServiceService:
 
     assert record == mock_record
 
+  
+  def test_get_target_metrics(self, mocker):
+    mock_record = [
+      "id", "age", "gender", "height", "weight", "bmi", "blood_pressure",
+      "heart_rate", "cholesterol", "glucose", "insulin", "stress_level",
+      "sleep_hours", "sleep_quality", "work_hours", "physical_activity", "daily_steps",
+      "calorie_intake", "alcohol_consumption", "smoking_level", "water_intake",
+      "diet_type", "exercise_type", "sunlight_exposure"
+    ]
+    target_metrics = ["bmi", "blood_pressure", "heart_rate", "cholesterol", "glucose", "insulin", "stress_level"]
+    mocker.patch("health_metrics.service.HealthMetricRepository.get_fields", return_value=mock_record)
+
+    record = HealthMetricService.get_target_metrics()
+    
+    assert set(target_metrics) == set(record)
+    assert all(f in record for f in target_metrics) 
+
 
   def test_update(self, mocker, mock_record_data):
     mock_record = mock_record_data.mock_record()
